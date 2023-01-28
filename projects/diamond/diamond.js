@@ -15,7 +15,7 @@ window.onload = function init() {
     ]
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     var program = initShaders(gl, 'vertex-shader', 'fragment-shader');
     gl.useProgram(program);
