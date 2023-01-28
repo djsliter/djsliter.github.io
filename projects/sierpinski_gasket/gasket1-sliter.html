@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-<title>2D Sierpinski Gasket</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>Sierpinski Gasket</title>
 
-<script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec4 vPosition;
+    <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
 
-void
-main()
-{
-	gl_PointSize = 3.0;
-    gl_Position = vPosition;
-}
-</script>
+    void
+    main()
+    {
+        gl_PointSize = 3.0;
+        gl_Position = vPosition;
+    }
+    </script>
 
-<script id="fragment-shader" type="x-shader/x-fragment">
-precision mediump float;
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
 
-void
-main()
-{
-    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
-}
-</script>
+    void
+    main()
+    {
+        gl_FragColor = vec4( 0.4, 0.7, 1.0, 1.0 );
+    }
+    </script>
 
-<script type="text/javascript" src="./common/webgl-utils.js"></script>
-<script type="text/javascript" src="./common/initShaders.js"></script>
-<script type="text/javascript" src="./common/MV.js"></script>
-<script type="text/javascript" src="gasket1-sliter.js"></script>
+    <script type="text/javascript" src="../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../common/initShaders.js"></script>
+    <script type="text/javascript" src="../common/MV.js"></script>
+    <script type="text/javascript" src="gasket1-sliter.js"></script>
 </head>
 
 <body>
-    <h1><a style="text-decoration:none; color: black;" href="/index.html">Dakota Sliter's Software Dev Portfolio</a></h1>
+    <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
     <hr>
-    <h2>Sierpinski Gasket Rendered with WebGL</h3>
+    <h2>Sierpinski Gasket Rendered with WebGL:</h3>
 
-    <canvas id="gl-canvas" width="512" height="512"> Oops ... your browser doesn't support the HTML5 canvas element
+    <canvas id="gl-canvas" width="1024px" height="1024px"> Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
 </body>
 </html>

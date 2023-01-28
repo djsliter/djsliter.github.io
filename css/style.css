@@ -1,0 +1,17 @@
+html *
+{
+   color: #FFF !important;
+}
+body {
+    background-color:black;
+    margin: 10px 50px;
+}
+
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    
+}

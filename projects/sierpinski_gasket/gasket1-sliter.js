@@ -3,7 +3,7 @@
 var gl;
 var points;
 
-var NumPoints = 5000;
+var NumPoints = 15000;
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -25,20 +25,17 @@ window.onload = function init()
     var vertices = [
         vec2( -1, 1 ),
         vec2(  0,  -1 ),
-        vec2(  1, 1 )
+        vec2(  1, 1 ),
     ];
 
     // Specify a starting point p for our iterations
     // p must lie inside any set of three vertices
 
     var u = add( vertices[0], vertices[1] );
-    
     var v = add( vertices[0], vertices[2] );
-    
     var p = scale( 0, add( u, v ) );
    
     
-
     // And, add our initial point into our array of points
 
     points = [ p ];
@@ -50,9 +47,7 @@ window.onload = function init()
     for ( var i = 0; points.length < NumPoints; ++i ) {
         var j = Math.floor(Math.random() * 3);
         p = add( points[i], vertices[j] );
-        
         p = scale( 0.5, p );
-        
         points.push( p );
     }
     
@@ -70,11 +65,8 @@ window.onload = function init()
     // Load the data into the GPU
 
     var bufferId = gl.createBuffer();
-    console.log(gl.ARRAY_BUFFER);
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
-    console.log(gl.ARRAY_BUFFER);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
-    console.log(gl.ARRAY_BUFFER);
 
     // Associate out shader variables with our data buffer
 

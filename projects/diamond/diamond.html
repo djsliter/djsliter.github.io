@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/css/style.css">
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec4 vPosition;
+            
+            void main() {
+              gl_Position = vPosition;
+            }
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            
+            void main() {
+              gl_FragColor = vec4(0.4, 0.7, 1.0, 1.0);
+            }
+        </script>
+        <script id="fragment-shader2" type="x-shader/x-fragment">
+            precision mediump float;
+            
+            void main() {
+              gl_FragColor = vec4(1, 0.7, 1.0, 1.0);
+            }
+        </script>
+        
+        <script type="text/javascript" src="../common/webgl-utils.js"></script>
+        <script type="text/javascript" src="../common/initShaders.js"></script>
+        <script type="text/javascript" src="../common/MV.js"></script>
+
+        <script type="text/javascript" src="diamond.js"></script>
+    </head>
+    <body>
+        <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
+        <hr>
+        <h2>Diamond with WebGL:</h3>
+        <canvas id="gl-canvas" width="1024" height="1024">Your browser doesn't support html5! Oh no!</canvas>
+    </body>
+</html>
