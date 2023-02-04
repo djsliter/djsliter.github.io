@@ -32,7 +32,7 @@ window.onload = function init() {
     
     window.addEventListener("resize", function() {
         canvas.width = window.innerWidth - 130;
-        canvas.height = window.innerHeight;
+        canvas.height = window.innerHeight + 100;
     });
 
     gl = WebGLUtils.setupWebGL(canvas);
