@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <style>
+            body {
+                background-image: url("/stars.jpg");
+            }
+        </style>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec4 vPosition;
+            
+            // For moving the object
+            uniform float x;
+            uniform float y;
+            uniform vec2 u_rotation;
+            
+            void main() {
+                // Rotate vPosition
+                vec2 rotate = vec2(
+                    vPosition.x * u_rotation.y + vPosition.y * u_rotation.x,
+                    vPosition.y * u_rotation.y - vPosition.x * u_rotation.x
+                );
+                // Add translation from x, y
+                rotate[0] += x;
+                rotate[1] += y;
+                
+                // Update gl_Position to new value
+                gl_Position = vec4(rotate, 0.0, 1.0);
+                
+            }
+        </script>
+
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            
+            void main() {
+              gl_FragColor = vec4(0.2, 0.7, 1.0, 1.0);
+            }
+        </script>
+        
+        <script type="text/javascript" src="./common/webgl-utils.js"></script>
+        <script type="text/javascript" src="./common/initShaders.js"></script>
+        <script type="text/javascript" src="./common/MV.js"></script>
+
+        <script type="text/javascript" src="spaceship.js"></script>
+    </head>
+    <body>
+        <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
+        <hr>
+        <h2>Spaceship with WebGL:</h2>
+        <h3>Use WASD or arrow keys to move. Hold spacebar to boost.</h3>
+
+        <canvas id="gl-canvas">Your browser doesn't support html5!</canvas>
+    </body>
+</html>
