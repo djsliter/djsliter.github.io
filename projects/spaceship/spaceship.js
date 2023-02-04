@@ -27,6 +27,12 @@ function newXYForAngle(angleInDegrees) {
 
 window.onload = function init() {
     var canvas = document.getElementById('gl-canvas');
+    
+    window.addEventListener("resize", function() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
     gl = WebGLUtils.setupWebGL(canvas);
    
     window.addEventListener(
