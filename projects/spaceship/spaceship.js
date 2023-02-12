@@ -7,8 +7,8 @@ var rLoc;
 var rotation = [0, 1];
 var angle = 90;
 var direction;
-var speed = 0.003;
-var boostSpeed = 0.005;
+var speed = 0.01;
+var boostSpeed = 0.02;
 // left, right, up, down
 var dirs = {
     "left": false, 
@@ -27,19 +27,13 @@ function newXYForAngle(angleInDegrees) {
 
 window.onload = function init() {
     var canvas = document.getElementById('gl-canvas');
-    canvas.width = window.innerWidth - 130;
-    canvas.height = window.innerHeight + 100;
-    
-    window.addEventListener("resize", function() {
-        canvas.width = window.innerWidth - 130;
-        canvas.height = window.innerHeight + 100;
-    });
-
     gl = WebGLUtils.setupWebGL(canvas);
+    var rect = gl.canvas.getBoundingClientRect();
    
     window.addEventListener(
         "keydown", 
         (e) => {
+            
             // Choose direction to move if key is pressed down
             if (e.key == "ArrowLeft" || e.key == "a") {
                 dirs.right = false;
@@ -53,7 +47,7 @@ window.onload = function init() {
             } else if (e.key == "ArrowDown" || e.key == "s") {
                 dirs.up = false;
                 dirs.down = true;
-            } else if (e.key == " ") {
+            } else if (e.key == "Shift") {
                 dirs.boost = true;
             }
                
@@ -72,11 +66,22 @@ window.onload = function init() {
                 dirs.up = false;
             } else if (e.key == "ArrowDown" || e.key == "s") {
                 dirs.down = false;
-            } else if (e.key == " ") {
+            } else if (e.key == "Shift") {
                 dirs.boost = false;
             } 
         }, 
         false
+    );
+    canvas.addEventListener(
+        "click",
+        (e) => {
+            // Convert coords
+            
+            x = (-1 + 2*(e.clientX - rect.left)/canvas.width);
+            y = -1*(-1 + 2*(e.clientY- rect.top)/canvas.height);
+            
+        }
+        
     );
        
     
@@ -91,7 +96,8 @@ window.onload = function init() {
         vec2(0.25, -0.25),
         vec2(0.0, 0.5)
     ]
-    // Didn't feel like manually resizing
+
+    // Resize
     for(let i = 0; i < vertices.length; i++) {
         vertices[i] = scale(0.25, vertices[i]);
     }
@@ -107,16 +113,16 @@ window.onload = function init() {
     xLoc = gl.getUniformLocation(program, "x");
     yLoc = gl.getUniformLocation(program, "y");
     rLoc = gl.getUniformLocation(program, "u_rotation");
-
+    
     var bufferID = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferID);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
     
-
     var vPosition = gl.getAttribLocation(program, 'vPosition');
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
+    
     render();
 };
 
@@ -125,10 +131,10 @@ function render() {
     direction = newXYForAngle(angle);
     
     if (dirs.right) { // rotate right
-        angle = angle - 2;
+        angle = angle - 5;
         rotation = newXYForAngle(angle);
     } else if (dirs.left) { // rotate left
-        angle = angle + 2;
+        angle = angle + 5;
         rotation = newXYForAngle(angle);
     }
     if (dirs.up) { // Move in direction object is pointed
@@ -137,7 +143,9 @@ function render() {
     } else if (dirs.down) { // move down
         y -= direction[1] * speed;
         x -= direction[0] * speed;
+        
     }
+    
     // Update uniform attribute values
     gl.uniform1f(xLoc, x);
     gl.uniform1f(yLoc, y);
