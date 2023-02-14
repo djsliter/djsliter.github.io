@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <link rel="stylesheet" href="../../css/style.css">
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+        <title>Screensaving Triangle</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <style>
+            body {
+                /* background-image: url("/stars.jpg"); */
+                background-color:black;
+                height: 100%;
+                overflow: hidden;
+                
+            }
+
+            canvas {
+                background-image: url("/stars.jpg");
+                padding-left: 0;
+                padding-right: 0;
+                margin: 30px auto;
+                
+                display: block;
+                
+            }
+        </style>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec4 vPosition;
+            
+            // For moving the object
+            uniform float x;
+            uniform float y;
+            
+            void main() {
+                // Update gl_Position to new value
+                gl_Position.x += x + vPosition.x;
+                gl_Position.y += y + vPosition.y;
+                gl_Position.z = 0.0;
+                gl_Position.w = 1.0;
+                
+            }
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            
+            void main() {
+              gl_FragColor = vec4(0.2, 0.7, 1.0, 1.0);
+            }
+        </script>
+        
+        <script type="text/javascript" src="../common/webgl-utils.js"></script>
+        <script type="text/javascript" src="../common/initShaders.js"></script>
+        <script type="text/javascript" src="../common/MV.js"></script>
+
+        <script type="text/javascript" src="triangle-anim.js"></script>
+    </head>
+    <body width="100%">
+        <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
+        <hr>
+        <h2>Screensaver Triangle</h2>
+        <canvas id="gl-canvas" width="700" height="700">Your browser doesn't support html5! Oh no!</canvas>
+    </body>
+</html>

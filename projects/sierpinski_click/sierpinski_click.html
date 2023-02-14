@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Sierpinski Gasket</title>
+    <style>
+        body {
+            overflow: visible;
+        }
+    </style>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+
+        void
+        main()
+        {
+            gl_Position = vPosition;
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        void
+        main()
+        {
+            gl_FragColor = vec4( 0.4, 0.7, 1.0, 1.0 );
+        }
+    </script>
+
+    <script type="text/javascript" src="../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../common/initShaders.js"></script>
+    <script type="text/javascript" src="../common/MV.js"></script>
+    <script type="text/javascript" src="sierpinski_click.js"></script>
+</head>
+
+<body>
+    <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
+    <hr>
+    <h2>Reshapable Sierpinski Gasket</h2>
+    <div style="padding: 20px;">
+        <div style="width: 30%; float: left; padding: 15px;">
+            Recursive Steps:<br> 0 <input id="slider" type="range" min="0" max="6" step="1" value="0" />
+            6
+            
+        </div>
+        <div style="width: 30%; float: left; padding: 20px;">
+            Vertex:<br>
+            <input type="radio" name="vertex" value="0" checked> 0
+            <input type="radio" name="vertex" value="1"> 1
+            <input type="radio" name="vertex" value="2"> 2
+        </div>
+    </div>
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</body>
+
+</html>
