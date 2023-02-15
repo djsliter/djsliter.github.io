@@ -4,12 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <link rel="stylesheet" href="../../css/style.css">
-    <title>Sierpinski Gasket</title>
-    <style>
-        body {
-            overflow: visible;
-        }
-    </style>
+    <title>Reshapable Sierpinski</title>
 
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
@@ -41,20 +36,17 @@
     <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
     <hr>
     <h2>Reshapable Sierpinski Gasket</h2>
-    <div style="padding: 20px;">
-        <div style="width: 30%; float: left; padding: 15px;">
+    <div>
+        <div style="width: 50%; padding: 15px;">
             Recursive Steps:<br> 0 <input id="slider" type="range" min="0" max="6" step="1" value="0" />
             6
             
         </div>
-        <div style="width: 30%; float: left; padding: 20px;">
-            Vertex:<br>
-            <input type="radio" name="vertex" value="0" checked> 0
-            <input type="radio" name="vertex" value="1"> 1
-            <input type="radio" name="vertex" value="2"> 2
-        </div>
+        <p>Click and drag near a corner to reposition a vertex</p>
+        
     </div>
-    <canvas id="gl-canvas" width="512" height="512">
+    
+    <canvas id="gl-canvas" width="1024" height="1024">
         Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
 </body>
