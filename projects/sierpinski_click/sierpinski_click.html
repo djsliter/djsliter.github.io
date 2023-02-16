@@ -36,19 +36,21 @@
     <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
     <hr>
     <h2>Reshapable Sierpinski Gasket</h2>
-    <div>
-        <div style="width: 50%; padding: 15px;">
+    <div style="display: flex; margin: 10px 5%;">
+        <div style="width: 25%; padding: 15px; float: left;">
             Recursive Steps:<br> 0 <input id="slider" type="range" min="0" max="6" step="1" value="0" />
             6
-            
+            <p>Click and drag near a corner to reposition a vertex</p>
         </div>
-        <p>Click and drag near a corner to reposition a vertex</p>
         
+        <canvas id="gl-canvas" width="720" height="720" style="float: left;">
+            Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
     </div>
     
-    <canvas id="gl-canvas" width="1024" height="1024">
+    <!-- <canvas id="gl-canvas" width="720" height="720">
         Oops ... your browser doesn't support the HTML5 canvas element
-    </canvas>
+    </canvas> -->
 </body>
 
 </html>

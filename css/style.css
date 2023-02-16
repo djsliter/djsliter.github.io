@@ -5,7 +5,6 @@ html *
 body {
     background-color:black;
     margin: 10px 50px;
-    overflow: hidden;
 }
 
 canvas {
