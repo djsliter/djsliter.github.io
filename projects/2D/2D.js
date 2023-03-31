@@ -21,8 +21,8 @@ var upKey, downKey, leftKey, rightKey;
 
 function preload ()
 {
-    this.load.image('sky', 'http://labs.phaser.io/assets/skies/clouds.png');
-    this.load.image('smoke', 'http://labs.phaser.io/assets/particles/smoke-puff.png');
+    this.load.image('sky', 'https://labs.phaser.io/assets/skies/clouds.png');
+    this.load.image('smoke', 'https://labs.phaser.io/assets/particles/smoke-puff.png');
     this.load.spritesheet('drone', 'resources/1 Drones/4/Walk.png', { frameWidth: 96, frameHeight:70, endFrame: 4 });
 }
 
