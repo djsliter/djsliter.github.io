@@ -4,12 +4,7 @@
 <head>
     <meta charset=utf-8>
     <title>SLITER - 367 Three.js demo</title>
-    <style>
-        * {
-            margin: 0px;
-            padding: 0px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
         {
@@ -54,7 +49,7 @@
         camera.rotation.set(0, 0, 0)
 
         const renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize( window.innerWidth - 100, window.innerHeight - 200);
 
 
         // Add a floor to the scene
@@ -221,6 +216,10 @@
 </head>
 
 <body>
+    <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
+        <hr>
+        <h2>ThreeJS Lab:</h2>
+        <p>WASD keys to move</p>
 </body>
 
 </html>

@@ -1,15 +1,13 @@
 import * as THREE from 'three';
 import { GLTFLoader } from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js'
 
-var dx = 0.0;
-var dy = 0.0;
-var dz = 0.0;
-var x, y, z;
+let stars = []
 let pitchAxis = new THREE.Vector3(1, 0, 0);
 let rollAxis = new THREE.Vector3(0, 0, 1);
+let direction = new THREE.Vector3();
 
 class Ship {
-    constructor() {
+    constructor(loader) {
        // Load a glTF resource
         loader.load(
             // resource URL
@@ -20,41 +18,44 @@ class Ship {
                 gltf.scene.scale.set(0.25, 0.25, 0.25)
                 gltf.scene.rotation.set(0.0, 3.14, 0);
                 this.ship = gltf.scene;
-                
             }
 
         ); 
     }
+
     rotateRight() {
         this.ship.rotateOnAxis(rollAxis, 0.04)
-        camera.rotateOnAxis(rollAxis, -0.04)
     }
     rotateLeft() {
         this.ship.rotateOnAxis(rollAxis, -0.04)
-        camera.rotateOnAxis(rollAxis, 0.04)
     }
     moveForward() {
-        let direction = new THREE.Vector3();
         this.ship.getWorldDirection(direction);
+        camera.position.x = this.ship.position.x
+        camera.position.y = this.ship.position.y
         camera.position.z = this.ship.position.z + 700
         camera.lookAt(this.ship.position)
         this.ship.position.add(direction.multiplyScalar(10.0))
     }
     pitchUp() {
-        camera.rotateOnAxis(pitchAxis, 0.04)
-        
         this.ship.rotateOnAxis(pitchAxis, -0.04)
     }
     pitchDown() {
-        camera.rotateOnAxis(pitchAxis, -0.04)
-        console.log(this.ship.position)
         this.ship.rotateOnAxis(pitchAxis, 0.04)
+    }
+    drift() {
+        this.ship.getWorldDirection(direction);
+        camera.position.x = this.ship.position.x
+        camera.position.y = this.ship.position.y
+        camera.position.z = this.ship.position.z + 700
+        camera.lookAt(this.ship.position)
+        this.ship.position.add(direction.multiplyScalar(3.0))
     }
 }
 
 // Used to add primitives to the scene
-const { scene, camera, renderer, loader, light } = init();
-var ship = new Ship();
+const { scene, camera, renderer, loader, ship } = init();
+
 
 var forwardActionID;
 var rotationActionID;
@@ -113,12 +114,14 @@ window.onload = () => {
         }, 
         false
     )
+    setTimeout(animate, 500)
 }
 
 function init() {
     const scene = new THREE.Scene();
     // Instantiate a loader
     const loader = new GLTFLoader();
+    
     const axesHelper = new THREE.AxesHelper( 150 );
     scene.add( axesHelper );
     // Defines the camera view: FOV, aspect ratio, near, far clipping planes
@@ -129,24 +132,55 @@ function init() {
 
     // Instantiate the renderer object
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth - 100, window.innerHeight - 200);
     document.body.appendChild(renderer.domElement);
     
-    renderer.setClearColor( 0x306090, 1)
+    renderer.setClearColor( 0x000, 1)
 
     const light = new THREE.AmbientLight( 0xffffff, 3 ); // soft white light
     scene.add( light );
 
-    camera.position.z = 500;
+    camera.position.z = 700;
     camera.position.x = 0;
     camera.position.y = 0;
 
-    return { scene, camera, renderer, loader, light };
+    var ship = new Ship(loader);
+    renderer.render( scene, camera );
+
+    return { scene, camera, renderer, loader, ship };
+}
+
+function addSphere(){
+
+    // The loop will move from z position of -1000 to z position 1000, adding a random particle at each position. 
+    for ( let i = -10000; i < 10000; i += 20 ) {
+
+        // Make a sphere (exactly the same as before). 
+        var geometry   = new THREE.SphereGeometry(0.5, 32, 32)
+        var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+        var sphere = new THREE.Mesh(geometry, material)
+
+        // This time we give the sphere random x and y positions between -500 and 500
+        sphere.position.x = Math.random() * 10000 - 5000;
+        sphere.position.y = Math.random() * 10000 - 5000;
+
+        // Then set the z position to where it is in the loop (distance of camera)
+        sphere.position.z = i;
+
+        // scale it up a bit
+        sphere.scale.x = sphere.scale.y = 5;
+
+        //add the sphere to the scene
+        scene.add( sphere );
+
+        //finally push it to the stars array 
+        stars.push(sphere); 
+    }
 }
 
 function animate() {
+    ship.drift()
     requestAnimationFrame( animate );
-
     renderer.render( scene, camera );
 }
-animate();
+addSphere();
