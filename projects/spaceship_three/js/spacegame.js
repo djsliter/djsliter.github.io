@@ -36,8 +36,7 @@ class Ship {
         this.ship.rotateOnAxis(rollAxis, -0.04)
     }
     moveForward() {
-        starGroup.position.add(direction.multiplyScalar(-10.0))
-        console.log(starGroup)
+        starGroup.position.add(direction.multiplyScalar(10.0))
     }
     pitchUp() {
         this.ship.rotateOnAxis(pitchAxis, -0.04)
@@ -46,12 +45,13 @@ class Ship {
         this.ship.rotateOnAxis(pitchAxis, 0.04)
     }
     drift() {
-        stars.position.add(direction.multiplyScalar(-3.0))
+        this.ship.getWorldDirection(direction)
+        starGroup.position.add(direction.multiplyScalar(-3.0))
     }
 }
 
 // Used to add primitives to the scene
-const { scene, camera, renderer, loader, ship } = init();
+const { scene, camera, renderer, ship } = init();
 addSphere();
 scene.add(starGroup)
 
@@ -113,7 +113,7 @@ window.onload = () => {
         }, 
         false
     )
-    setTimeout(animate, 200)
+    setTimeout(animate, 1000)
 }
 
 function init() {
@@ -142,13 +142,13 @@ function init() {
     
     renderer.render( scene, camera );
 
-    return { scene, camera, renderer, loader, ship };
+    return { scene, camera, renderer, ship };
 }
 
 function addSphere(){
 
     // The loop will move from z position of -1000 to z position 1000, adding a random particle at each position. 
-    for ( let i = 0; i < 2000; i ++ ) {
+    for ( let i = 0; i < 1000; i ++ ) {
 
         // Make a sphere (exactly the same as before). 
         let geometry   = new THREE.SphereGeometry(0.5, 32, 32)
@@ -174,10 +174,10 @@ function addSphere(){
 }
 
 function animate() {
-    //ship.drift()
+    ship.drift()
     
-    ship.ship.getWorldDirection(direction)
-    camera.up.set(direction.x, direction.y, direction.z)
+    // ship.ship.getWorldDirection(direction)
+    // camera.up.set(direction.x, direction.y, direction.z)
     renderer.render( scene, camera );
     requestAnimationFrame( animate );
 }
