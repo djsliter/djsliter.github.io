@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js'
 
 let stars = []
+let projectiles = []
 const starGroup = new THREE.Group()
 let pitchAxis = new THREE.Vector3(1, 0, 0);
 let rollAxis = new THREE.Vector3(0, 0, 1);
@@ -36,7 +37,7 @@ class Ship {
         this.ship.rotateOnAxis(rollAxis, -0.04)
     }
     moveForward() {
-        starGroup.position.add(direction.multiplyScalar(10.0))
+        starGroup.position.add(direction.multiplyScalar(1.0))
     }
     pitchUp() {
         this.ship.rotateOnAxis(pitchAxis, -0.04)
@@ -46,7 +47,7 @@ class Ship {
     }
     drift() {
         this.ship.getWorldDirection(direction)
-        starGroup.position.add(direction.multiplyScalar(-3.0))
+        starGroup.position.add(direction.multiplyScalar(-5.0))
     }
 }
 
@@ -54,6 +55,11 @@ class Ship {
 const { scene, camera, renderer, ship } = init();
 addSphere();
 scene.add(starGroup)
+// Make a sphere (exactly the same as before). 
+let geometry   = new THREE.SphereGeometry(50, 50, 50)
+let material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+let projectile = new THREE.Mesh(geometry, material)
+// projectile.scale.x = projectile.scale.y = projectile.scale.z = 100;
 
 
 var forwardActionID;
@@ -61,7 +67,13 @@ var rotationActionID;
 var verticalActionID;
 
 window.onload = () => {
-    
+    window.addEventListener("mousedown", (e)=> {
+        projectile.position.set(ship.ship.position.x, ship.ship.position.y, ship.ship.position.z)
+        scene.add(projectile)
+    })
+    window.addEventListener("mouseup", (e) => {
+        // scene.remove(projectile)
+    })
     window.addEventListener("keypress", (e) => { 
         if(e.key === ' ') {
             if(!forwardActionID) {
@@ -104,6 +116,7 @@ window.onload = () => {
             rotationActionID = 0;
         }
     })
+
     window.addEventListener('resize', 
         () => {
             camera.aspect = window.innerWidth / window.innerHeight ;
@@ -148,7 +161,7 @@ function init() {
 function addSphere(){
 
     // The loop will move from z position of -1000 to z position 1000, adding a random particle at each position. 
-    for ( let i = 0; i < 1000; i ++ ) {
+    for ( let i = 0; i < 2000; i ++ ) {
 
         // Make a sphere (exactly the same as before). 
         let geometry   = new THREE.SphereGeometry(0.5, 32, 32)
@@ -162,7 +175,7 @@ function addSphere(){
         // Then set the z position to where it is in the loop (distance of camera)
         sphere.position.z = Math.random() * 10000 - 5000;
         // scale it up a bit
-        sphere.scale.x = sphere.scale.y = 5;
+        sphere.scale.x = sphere.scale.y = 8;
         if(i == 0) {
             sphere.scale.x = sphere.scale.y = 100;
         }
@@ -175,9 +188,9 @@ function addSphere(){
 
 function animate() {
     ship.drift()
+    projectile.position.add(direction.multiplyScalar(-14.0))
+
     
-    // ship.ship.getWorldDirection(direction)
-    // camera.up.set(direction.x, direction.y, direction.z)
     renderer.render( scene, camera );
     requestAnimationFrame( animate );
 }
