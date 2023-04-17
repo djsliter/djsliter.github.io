@@ -1,29 +1,44 @@
 import * as THREE from 'three';
 import { GLTFLoader } from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js'
 
+let animationID
+
 let stars = []
-let projectiles = []
-const starGroup = new THREE.Group()
+let starGroup = new THREE.Group()
 let pitchAxis = new THREE.Vector3(1, 0, 0);
 let rollAxis = new THREE.Vector3(0, 0, 1);
 let direction = new THREE.Vector3();
+
+let shipBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+
+let projectiles = []
+let reloading = false;
+let ammo = 5;
+let projectileDirections = [];
+for(let i = 1; i <= ammo; i++) projectileDirections[i] = new THREE.Vector3();
+
+let asteroids = {}
+let asteroidGroup = new THREE.Group()
+let asteroidBBs = []
 
 class Ship {
     constructor(loader) {
        // Load a glTF resource
         loader.load(
             // resource URL
-            './models/scene.gltf',
+            './models/spaceship/scene.gltf',
             // called when the resource is loaded
             ( gltf ) => {
                 scene.add( gltf.scene );
-                gltf.scene.scale.set(0.25, 0.25, 0.25)
+                gltf.scene.scale.set(0.05, 0.05, 0.05)
                 gltf.scene.rotation.set(0.0, 3.14, 0);
                 gltf.scene.add( camera )
                 camera.lookAt(gltf.scene)
                 camera.position.set( 0, 1000, -3000 );
                 camera.rotation.set(0.2, Math.PI, 0)
                 this.ship = gltf.scene;
+                shipBB.setFromObject(gltf.scene)
+                
             }
 
         ); 
@@ -37,7 +52,9 @@ class Ship {
         this.ship.rotateOnAxis(rollAxis, -0.04)
     }
     moveForward() {
-        starGroup.position.add(direction.multiplyScalar(1.0))
+        this.ship.getWorldDirection(direction)
+        starGroup.position.add(direction.multiplyScalar(-1.5))
+        asteroidGroup.position.add(direction.multiplyScalar(1.5))
     }
     pitchUp() {
         this.ship.rotateOnAxis(pitchAxis, -0.04)
@@ -47,92 +64,126 @@ class Ship {
     }
     drift() {
         this.ship.getWorldDirection(direction)
-        starGroup.position.add(direction.multiplyScalar(-5.0))
+        starGroup.position.add(direction.multiplyScalar(-1.2))
+        asteroidGroup.position.add(direction.multiplyScalar(1.2))
     }
 }
 
+class Asteroid {
+    constructor (loader) {
+        loader.load(
+            './models/asteroid/asteroid.glb',
+            (gltf) => {
+                
+                console.log(gltf.scene)
+                gltf.scene.scale.set(20, 20, 20)
+                gltf.scene.rotation.set(
+                    Math.random() * 2 * Math.PI - (2*Math.PI), 
+                    Math.random() * 2 * Math.PI - (2*Math.PI),
+                    Math.random() * 2 * Math.PI - (2*Math.PI)
+                );
+                gltf.scene.position.set(0, 10, -100)
+                this.asteroid = gltf.scene.children[0].children[0].children[0];
+                
+                setTimeout(addAsteroids, 1000);
+                
+            }
+        )
+    }
+}
+
+
 // Used to add primitives to the scene
-const { scene, camera, renderer, ship } = init();
+const { scene, camera, renderer, ship, asteroid } = init();
 addSphere();
 scene.add(starGroup)
-// Make a sphere (exactly the same as before). 
-let geometry   = new THREE.SphereGeometry(50, 50, 50)
-let material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-let projectile = new THREE.Mesh(geometry, material)
-// projectile.scale.x = projectile.scale.y = projectile.scale.z = 100;
 
+let geometry   = new THREE.SphereGeometry(15, 15, 15)
+let material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
 
 var forwardActionID;
 var rotationActionID;
 var verticalActionID;
 
-window.onload = () => {
-    window.addEventListener("mousedown", (e)=> {
-        projectile.position.set(ship.ship.position.x, ship.ship.position.y, ship.ship.position.z)
-        scene.add(projectile)
-    })
-    window.addEventListener("mouseup", (e) => {
-        // scene.remove(projectile)
-    })
-    window.addEventListener("keypress", (e) => { 
-        if(e.key === ' ') {
-            if(!forwardActionID) {
-                forwardActionID = setInterval(()=> ship.moveForward(), 16);
-            }
-        }
-        if(e.key === 'w') {
-            if(!verticalActionID) {
-                verticalActionID = setInterval(() => ship.pitchDown(), 16);
-            }
-        }
-        if(e.key === 's') {
-            if(!verticalActionID) {
-                verticalActionID = setInterval(() => ship.pitchUp(), 16);
-            }
-        }
-        if(e.key === 'a') {
-            if(!rotationActionID) {
-                rotationActionID = setInterval(()=> ship.rotateLeft(), 16);
-            }
-        }
-        if(e.key === 'd') {
-            if(!rotationActionID) {
-                rotationActionID = setInterval(()=> ship.rotateRight(), 16);
-            }
-        }
+
+window.addEventListener("mousedown", (e)=> {
+    if(ammo > 0) {
+        projectiles[ammo] = new THREE.Mesh(geometry, material)
+        projectiles[ammo].geometry.computeBoundingSphere()
+        console.log(projectiles[ammo])
+
+        ship.ship.getWorldDirection(projectileDirections[ammo])
         
-    })
-    window.addEventListener("keyup", (e) => {
-        if(e.key === ' ') {
-            clearInterval(forwardActionID);
-            forwardActionID = 0;
-        }
-        if(e.key === 'w' || e.key === 's') {
-            clearInterval(verticalActionID);
-            verticalActionID = 0;
-        }
-        if(e.key === 'a' || e.key === 'd') {
-            clearInterval(rotationActionID);
-            rotationActionID = 0;
-        }
-    })
+        scene.add(projectiles[ammo])
 
-    window.addEventListener('resize', 
-        () => {
-            camera.aspect = window.innerWidth / window.innerHeight ;
-            camera.updateProjectionMatrix();
+        despawnProjectile(ammo)
 
-            renderer.setSize( window.innerWidth, window.innerHeight )
-        }, 
-        false
-    )
-    setTimeout(animate, 1000)
-}
+        ammo--;
+        if(ammo == 0) reload()
+    } 
+})
+
+window.addEventListener("keypress", (e) => { 
+    if(e.key === ' ') {
+        if(!forwardActionID) {
+            forwardActionID = setInterval(()=> ship.moveForward(), 16);
+        }
+    }
+    if(e.key === 'w') {
+        if(!verticalActionID) {
+            verticalActionID = setInterval(() => ship.pitchDown(), 16);
+        }
+    }
+    if(e.key === 's') {
+        if(!verticalActionID) {
+            verticalActionID = setInterval(() => ship.pitchUp(), 16);
+        }
+    }
+    if(e.key === 'a') {
+        if(!rotationActionID) {
+            rotationActionID = setInterval(()=> ship.rotateLeft(), 16);
+        }
+    }
+    if(e.key === 'd') {
+        if(!rotationActionID) {
+            rotationActionID = setInterval(()=> ship.rotateRight(), 16);
+        }
+    }
+    
+})
+window.addEventListener("keyup", (e) => {
+    if(e.key === ' ') {
+        clearInterval(forwardActionID);
+        forwardActionID = 0;
+    }
+    if(e.key === 'w' || e.key === 's') {
+        clearInterval(verticalActionID);
+        verticalActionID = 0;
+    }
+    if(e.key === 'a' || e.key === 'd') {
+        clearInterval(rotationActionID);
+        rotationActionID = 0;
+    }
+})
+
+window.addEventListener('resize', 
+    () => {
+        camera.aspect = window.innerWidth / window.innerHeight ;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight )
+    }, 
+    false
+)
+setTimeout(animate, 1000)
+
 
 function init() {
     const scene = new THREE.Scene();
     // Instantiate a loader
     const loader = new GLTFLoader();
+    const loader2 = new GLTFLoader();
+    
     
     const axesHelper = new THREE.AxesHelper( 150 );
     scene.add( axesHelper );
@@ -148,14 +199,16 @@ function init() {
     renderer.setClearColor( 0x000, 1)
     document.body.appendChild(renderer.domElement);
 
-    const light = new THREE.AmbientLight( 0xffffff, 3 ); // soft white light
+    const light = new THREE.AmbientLight( 0xafadaf, 15 ); // soft white light
     scene.add( light );
 
     const ship = new Ship(loader);
+    const asteroid = new Asteroid(loader2)
+    
     
     renderer.render( scene, camera );
 
-    return { scene, camera, renderer, ship };
+    return { scene, camera, renderer, ship, asteroid };
 }
 
 function addSphere(){
@@ -186,11 +239,85 @@ function addSphere(){
     
 }
 
-function animate() {
-    ship.drift()
-    projectile.position.add(direction.multiplyScalar(-14.0))
+function addAsteroids() {
+    
+    for(let i = 0; i < 200; i++) {
+        let spawnAsteroid = new THREE.Mesh( asteroid.asteroid.geometry, asteroid.asteroid.material )
+        let asteroidBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
 
+        spawnAsteroid.scale.set(40,40,40)
+        spawnAsteroid.position.set(Math.random() * 5000 - 2500, Math.random() * 5000 - 2500, Math.random() * 5000 - 2500)
+        spawnAsteroid.rotation.set(
+            Math.random() * 2 * Math.PI - (2*Math.PI), 
+            Math.random() * 2 * Math.PI - (2*Math.PI),
+            Math.random() * 2 * Math.PI - (2*Math.PI)
+        );
+        asteroidBB.setFromObject(spawnAsteroid)
+        spawnAsteroid.geometry.computeBoundingSphere()
+
+        asteroids[spawnAsteroid.uuid] = {
+            mesh: spawnAsteroid,
+            boundingBox: asteroidBB
+        }
+        
+        asteroidGroup.add(spawnAsteroid)
+        console.log(spawnAsteroid.geometry)
+    }
+    scene.add(asteroidGroup)
+}
+
+function reload() {
+    if(!reloading) {
+        reloading = true
+        setTimeout(() => {
+            ammo = 5;
+            reloading = false
+        }, 1000)
+    }
+}
+
+function despawnProjectile(index) {
+    setTimeout(() => {
+        scene.remove(projectiles[index])
+    }, 2000)
+}
+
+function despawnAsteroid(id) {
+
+}
+
+function animate() {
+    // ship.drift()
+
+    shipBB.setFromObject(ship.ship)
+    for(let key in asteroids) {
+        let asteroid = asteroids[key]
+        
+        asteroid.boundingBox.setFromObject(asteroid.mesh)
+        if(shipBB.intersectsBox(asteroid.boundingBox)) {
+            console.log("COLLISION")
+            stop(animationID)
+        }
+        for(let i = 1; i < projectiles.length; i++) {
+            if(projectiles[i]) {
+                if(asteroid.boundingBox.intersectsSphere(projectiles[i].geometry.boundingSphere)) alert("HIT")
+            }
+            
+        }
+    }
+    
+    for(let i = projectiles.length - 1; i > 0; i--) {
+        if(projectiles[i]) {
+            projectiles[i].position.add(projectileDirections[i].multiplyScalar(1.05))
+            projectiles[i].geometry.computeBoundingSphere()
+        }
+       
+    }
     
     renderer.render( scene, camera );
-    requestAnimationFrame( animate );
+    animationID = requestAnimationFrame( animate );
+}
+function stop(animationID) {
+    
+    window.cancelAnimationFrame(animationID)
 }
