@@ -62,8 +62,8 @@ class Ship {
     }
     moveForward() {
         this.ship.getWorldDirection(direction)
-        starGroup.position.add(direction.multiplyScalar(-1.5))
-        asteroidGroup.position.add(direction.multiplyScalar(1.5))
+        starGroup.position.add(direction.multiplyScalar(-3))
+        asteroidGroup.position.add(direction.multiplyScalar(3))
     }
     pitchUp() {
         this.ship.rotateOnAxis(pitchAxis, -0.04)
@@ -203,7 +203,7 @@ function init() {
     renderer.setClearColor( 0x000, 1)
     document.body.appendChild(renderer.domElement);
 
-    const light = new THREE.AmbientLight( 0xafadaf, 15 ); // soft white light
+    const light = new THREE.AmbientLight( 0xafafaf, 24 ); // soft white light
     scene.add( light );
 
     const ship = new Ship(loader);
@@ -302,8 +302,8 @@ function animate() {
         }
         for(let i = 1; i < projectiles.length; i++) {
             if(asteroid.boundingBox.intersectsSphere(projectilesBB[i])) {
-                console.log(asteroid)
                 asteroidGroup.remove(asteroid.mesh)
+                scene.remove(projectiles[i])
             }
   
         }
