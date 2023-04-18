@@ -189,8 +189,8 @@ function init() {
     const loader2 = new GLTFLoader();
     
     
-    const axesHelper = new THREE.AxesHelper( 150 );
-    scene.add( axesHelper );
+    // const axesHelper = new THREE.AxesHelper( 150 );
+    // scene.add( axesHelper );
     // Defines the camera view: FOV, aspect ratio, near, far clipping planes
     const camera = new THREE.PerspectiveCamera(
         70, window.innerWidth / window.innerHeight,
