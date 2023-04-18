@@ -179,7 +179,7 @@ window.addEventListener('resize',
     }, 
     false
 )
-setTimeout(animate, 1000)
+setTimeout(animate, 3000)
 
 
 function init() {
