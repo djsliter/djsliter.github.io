@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js'
 
-let animationID
+let animationID = 0
+let geometry   = new THREE.SphereGeometry(15, 15, 15)
+let material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
 
 let stars = []
 let starGroup = new THREE.Group()
@@ -12,10 +14,17 @@ let direction = new THREE.Vector3();
 let shipBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
 
 let projectiles = []
+let projectilesBB = []
 let reloading = false;
 let ammo = 5;
 let projectileDirections = [];
-for(let i = 1; i <= ammo; i++) projectileDirections[i] = new THREE.Vector3();
+for(let i = 1; i <= ammo; i++) {
+    projectiles[i] = new THREE.Mesh(geometry, material)
+    projectiles[i].geometry.computeBoundingSphere()
+    projectileDirections[i] = new THREE.Vector3();
+    projectilesBB[i] = new THREE.Sphere(projectiles[i].position, 15)
+}
+
 
 let asteroids = {}
 let asteroidGroup = new THREE.Group()
@@ -98,9 +107,6 @@ const { scene, camera, renderer, ship, asteroid } = init();
 addSphere();
 scene.add(starGroup)
 
-let geometry   = new THREE.SphereGeometry(15, 15, 15)
-let material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-
 var forwardActionID;
 var rotationActionID;
 var verticalActionID;
@@ -108,9 +114,7 @@ var verticalActionID;
 
 window.addEventListener("mousedown", (e)=> {
     if(ammo > 0) {
-        projectiles[ammo] = new THREE.Mesh(geometry, material)
-        projectiles[ammo].geometry.computeBoundingSphere()
-        console.log(projectiles[ammo])
+        projectiles[ammo].position.set(0, 0, 0)
 
         ship.ship.getWorldDirection(projectileDirections[ammo])
         
@@ -194,7 +198,7 @@ function init() {
     );
 
     // Instantiate the renderer object
-    const renderer = new THREE.WebGLRenderer({antialias: true});
+    const renderer = new THREE.WebGLRenderer({antialias: false});
     renderer.setSize(window.innerWidth - 100, window.innerHeight - 200);
     renderer.setClearColor( 0x000, 1)
     document.body.appendChild(renderer.domElement);
@@ -214,7 +218,7 @@ function init() {
 function addSphere(){
 
     // The loop will move from z position of -1000 to z position 1000, adding a random particle at each position. 
-    for ( let i = 0; i < 2000; i ++ ) {
+    for ( let i = 0; i < 1000; i ++ ) {
 
         // Make a sphere (exactly the same as before). 
         let geometry   = new THREE.SphereGeometry(0.5, 32, 32)
@@ -261,7 +265,6 @@ function addAsteroids() {
         }
         
         asteroidGroup.add(spawnAsteroid)
-        console.log(spawnAsteroid.geometry)
     }
     scene.add(asteroidGroup)
 }
@@ -295,21 +298,21 @@ function animate() {
         
         asteroid.boundingBox.setFromObject(asteroid.mesh)
         if(shipBB.intersectsBox(asteroid.boundingBox)) {
-            console.log("COLLISION")
-            stop(animationID)
+            console.log("SHIP COLLISION")
         }
         for(let i = 1; i < projectiles.length; i++) {
-            if(projectiles[i]) {
-                if(asteroid.boundingBox.intersectsSphere(projectiles[i].geometry.boundingSphere)) alert("HIT")
+            if(asteroid.boundingBox.intersectsSphere(projectilesBB[i])) {
+                console.log(asteroid)
+                asteroidGroup.remove(asteroid.mesh)
             }
-            
+  
         }
     }
     
     for(let i = projectiles.length - 1; i > 0; i--) {
         if(projectiles[i]) {
             projectiles[i].position.add(projectileDirections[i].multiplyScalar(1.05))
-            projectiles[i].geometry.computeBoundingSphere()
+            // projectilesBB[i].copy(projectiles[i].geometry.boundingSphere).applyMatrix4(projectiles[i].matrixWorld);
         }
        
     }
