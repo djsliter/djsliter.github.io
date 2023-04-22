@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/style.css">
     <title>SLITER - SpaceGame</title>
-    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <!-- <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script> -->
     <script type="importmap">
         {
             "imports": {
@@ -18,10 +18,22 @@
     <script type="module" src="./js/spacegame.js"></script>
 </head>
 <body>
-    
     <h1><a style="text-decoration:none; color: black;" href="/">Dakota Sliter's Software Dev Portfolio</a></h1>
-        <hr>
-        <h2>Spaceship with ThreeJS:</h2>
-        <p>Spacebar to move forward, W and S to control pitch, A and D to roll</p>
+    <hr>
+    <h2>Spaceship with ThreeJS:</h2>
+
+    <div id="controls">
+        <p>Boost: Shift. Pitch: W and S. Roll: A and D. Shoot: Spacebar. Pause/Play: Escape.</p>
+    </div>
+    <button id="toggleControls">Controls</button>
+    <div id="startgame">
+        <button id="startbutton">Start Game</button>
+    </div>
+    <h1 id="gameover" class="hide">GAMEOVER</h1>
+    <h2 id="paused" class="hide">PAUSED</h2>
+    <h3 id="score">Score: 0</h3>
+    <h3 id="ammo">Ammo: 5</h3>
+    <h3 id="lives">LIVES: 3</h3>
+
 </body>
 </html>
